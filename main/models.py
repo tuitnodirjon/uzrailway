@@ -117,7 +117,7 @@ class Notifications(BaseModel):
 
     def get_is_active(self):
         return self.is_active and self.date >= datetime.datetime.now().date() and (
-                    not self.blocked or self.blocked < timezone.now())
+                not self.blocked or self.blocked < timezone.now())
 
     def all_free_trains_data(self):
         if not self.get_is_active():
@@ -179,10 +179,6 @@ class Notifications(BaseModel):
         )
         if response.status_code == 200:
             trains = response.json()['express']['direction']
-            if not trains[0]['trains']:
-                self.is_active = False
-                self.save()
-                return []
             if len(trains) > 0:
                 data = trains[0]['trains']
                 for i in data:
@@ -216,10 +212,7 @@ class Notifications(BaseModel):
                 token = UserPassword.get_new_token()
                 self.token = token
                 self.save()
-                if self.get_available_places() == 0:
-                    self.is_active = False
-                    self.available_until = timezone.now()
-                    self.save()
+                pass
         return []
 
     def __str__(self):
